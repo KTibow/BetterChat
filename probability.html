@@ -32,7 +32,7 @@
     <script>
         window.exampleMessages = {};
         (async () => {
-            window.exampleMessages = fetch("messages.json").then(r => r.json());
+            window.exampleMessages = await fetch("messages.json").then(r => r.json());
         })();
         const input = document.getElementById("input");
         const stripped = document.getElementById("stripped");
