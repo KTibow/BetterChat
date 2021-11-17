@@ -49,7 +49,7 @@
             var fineTokens = {};
             var tradingTokens = {};
             var irlTradingTokens = {};
-            for (message of messages) {
+            for (message of exampleMessages) {
                 const tokens = new Set(tokenizeText(message.text));
                 for (token of tokens) {
                     if (message == "a") {
