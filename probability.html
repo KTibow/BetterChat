@@ -34,7 +34,8 @@
         (async () => {
             window.exampleMessages = await fetch("messages.json").then(r => r.json());
         })();
-        const input = document.getElementById("input");
+        const isUnmigrated = document.querySelector("input[type=checkbox]");
+        const input = document.querySelector("input[type=text]");
         const stripped = document.getElementById("stripped");
         const table = document.querySelector("table");
         const tokenizeText = (text) => {
@@ -73,16 +74,26 @@
                 // P(spam | token) = P(token | spam) / (P(token | fine) + P(token | spam))
                 const tokenGivenSpam = spamCount / (Object.keys(tradingTokens).length + Object.keys(irlTradingTokens).length);
                 const tokenGivenFine = fineCount / Object.keys(fineTokens).length;
-                console.log(token, tokenGivenSpam, tokenGivenFine);
-                console.log(fineTokens, tradingTokens, irlTradingTokens);
                 tokenProbabilities[token] = tokenGivenSpam / (tokenGivenSpam + tokenGivenFine);
+                tokenProbabilities[token] = Math.min(Math.max(tokenProbabilities[token], 0.01), 0.99);
             }
-            console.log(tokenProbabilities);
         };
         const classify = () => {
             const text = input.value;
             const textTokens = tokenizeText(text);
             stripped.textContent = textTokens.join(" ");
+            const tokenProbabilities = getTokenProbabilities(isUnmigrated.checked);
+            const spamProb = 1;
+            const notSpamProb = 1;
+            for (token of textTokens) {
+                if (tokenProbabilities[token] == undefined) {
+                    continue;
+                }
+                spamProb *= tokenProbabilities[token];
+                notSpamProb *= (1 - tokenProbabilities[token]);
+            }
+            const spamProbability = spamProb / (spamProb + notSpamProb);
+            console.log(spamProbability);
         };
         input.addEventListener("keyup", (e) => {
             classify();
