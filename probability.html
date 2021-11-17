@@ -71,9 +71,9 @@
                 const fineCount = fineTokens[token] || 0;
                 const spamCount = tradingTokens[token] || 0 + irlTradingTokens[token] || 0;
                 // P(spam | token) = P(token | spam) / (P(token | fine) + P(token | spam))
-                tokenProbabilities[token] =
-                    (spamCount / tradingTokens.length + irlTradingTokens.length) /
-                    (fineCount / fineTokens.length + (spamCount / tradingTokens.length + irlTradingTokens.length));
+                const tokenGivenSpam = spamCount / (tradingTokens.length + irlTradingTokens.length);
+                const tokenGivenFine = fineCount / fineTokens.length;
+                tokenProbabilities[token] = tokenGivenSpam / (tokenGivenSpam + tokenGivenFine);
             }
             console.log(tokenProbabilities);
         };
