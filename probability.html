@@ -55,7 +55,7 @@
             var irlTradingTokens = {};
             for (message in exampleMessages) {
                 let messageClass = exampleMessages[message];
-                const tokens = new Set(tokenizeText(message));
+                const tokens = new Set(tokenizeText(message.split(":").splice(1).join(":")));
                 for (token of tokens) {
                     if (messageClass == "") {
                         fineTokens[token] = (fineTokens[token] || 0) + 1;
