@@ -30,6 +30,10 @@
     <h2>Classification</h2>
     <table></table>
     <script>
+        window.exampleMessages = {};
+        (async () => {
+            window.exampleMessages = fetch("messages.json").then(r => r.json());
+        })();
         const input = document.getElementById("input");
         const stripped = document.getElementById("stripped");
         const table = document.querySelector("table");
@@ -41,7 +45,6 @@
             return text.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         };
         const getTokenProbabilities = async (countIrlTrading) => {
-            const exampleMessages = fetch("messages.json").then(r => r.json());
             // Each message has its key as the message, and the value as:
             // a: fine
             // b: trading
