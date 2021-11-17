@@ -74,6 +74,7 @@
                 const tokenGivenSpam = spamCount / (tradingTokens.length + irlTradingTokens.length);
                 const tokenGivenFine = fineCount / fineTokens.length;
                 console.log(token, tokenGivenSpam, tokenGivenFine);
+                console.log(tradingTokens, tradingTokens.length);
                 tokenProbabilities[token] = tokenGivenSpam / (tokenGivenSpam + tokenGivenFine);
             }
             console.log(tokenProbabilities);
