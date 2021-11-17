@@ -83,8 +83,8 @@
             const textTokens = tokenizeText(text);
             stripped.textContent = textTokens.join(" ");
             const tokenProbabilities = getTokenProbabilities(isUnmigrated.checked);
-            const spamProb = 1;
-            const notSpamProb = 1;
+            var spamProb = 1;
+            var notSpamProb = 1;
             for (token of textTokens) {
                 if (tokenProbabilities[token] == undefined) {
                     continue;
