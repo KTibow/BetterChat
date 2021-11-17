@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classifier Test | Better Chat</title>
+    <style>
+        body {
+            font-family: system-ui;
+            background-color: #234;
+            color: white;
+        }
+        ::placeholder {
+            color: #ccc;
+        }
+        input {
+            border: none;
+            background-color: #345;
+            color: white;
+            padding: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test out the Better Chat classifier</h1>
+    Is the sender unmigrated (influences if it could be IRL trading)? <input type="checkbox" checked><br>
+    <input type="text" id="input" placeholder="Enter a message to classify">
+    <h2>Stripped version</h2>
+    <p id="stripped"></p>
+    <h2>Classification</h2>
+    <table></table>
+    <script>
+        const input = document.getElementById("input");
+        const stripped = document.getElementById("stripped");
+        const table = document.querySelector("table");
+        const tokenizeText = (text) => {
+            // First, all unicode characters are replaced with the plain version using .normalize("NFKC")
+            // Then, all non-alphanumeric characters are replaced with a space (consecutive spaces are removed and trimmed)
+            // Then, the text is lowercased
+            // Finally, the text is tokenized
+            return text.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
+        };
+        const getTokenProbabilities = async (countIrlTrading) => {
+            const exampleMessages = fetch("messages.json").then(r => r.json());
+            // Each message has its key as the message, and the value as:
+            // a: fine
+            // b: trading
+            // c: irl trading
+            var fineTokens = {};
+            var tradingTokens = {};
+            var irlTradingTokens = {};
+            for (message of messages) {
+                const tokens = new Set(tokenizeText(message.text));
+                for (token of tokens) {
+                    if (message == "a") {
+                        fineTokens[token] = (fineTokens[token] || 0) + 1;
+                    } else if (message == "b") {
+                        tradingTokens[token] = (tradingTokens[token] || 0) + 1;
+                    } else if (message == "c" && countIrlTrading) {
+                        irlTradingTokens[token] = (irlTradingTokens[token] || 0) + 1;
+                    }
+                }
+            }
+            // Then calculate each token's bayesian probability
+            const tokenProbabilities = {};
+            for (token in {...fineTokens, ...tradingTokens, ...irlTradingTokens}) {
+                const fineCount = fineTokens[token] || 0;
+                const spamCount = tradingTokens[token] || 0 + irlTradingTokens[token] || 0;
+                // P(spam | token) = P(token | spam) / (P(token | fine) + P(token | spam))
+                tokenProbabilities[token] =
+                    (spamCount / tradingTokens.length + irlTradingTokens.length) /
+                    (fineCount / fineTokens.length + (spamCount / tradingTokens.length + irlTradingTokens.length));
+            }
+            console.log(tokenProbabilities);
+        };
+        const classify = () => {
+            const text = input.value;
+            const textTokens = tokenizeText(text);
+            stripped.textContent = textTokens.join(" ");
+        };
+        input.addEventListener("keyup", (e) => {
+            classify();
+        });
+    </script>
+</body>
+</html>
