@@ -86,6 +86,7 @@
             var spamProb = 1;
             var notSpamProb = 1;
             for (token of textTokens) {
+                console.log(token, tokenProbabilities[token]);
                 if (tokenProbabilities[token] == undefined) {
                     continue;
                 }
