@@ -46,7 +46,7 @@
         };
         const getTokenProbabilities = async (countIrlTrading) => {
             // Each message has its key as the message, and the value as:
-            // a: fine
+            // nothing: fine
             // b: trading
             // c: irl trading
             var fineTokens = {};
@@ -56,7 +56,7 @@
                 let messageClass = exampleMessages[message];
                 const tokens = new Set(tokenizeText(message));
                 for (token of tokens) {
-                    if (messageClass == "a") {
+                    if (messageClass == "") {
                         fineTokens[token] = (fineTokens[token] || 0) + 1;
                     } else if (messageClass == "b") {
                         tradingTokens[token] = (tradingTokens[token] || 0) + 1;
