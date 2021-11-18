@@ -64,18 +64,28 @@
                 }
             }
             var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
-            return {"weight": weight, "spamCount": spamCount, "totalSpams": totalSpams, "nonSpamCount": nonSpamCount, "totalNonSpams": totalNonSpams};
+            return {"weight": weight || 0, "spamCount": spamCount, "totalSpams": totalSpams, "nonSpamCount": nonSpamCount, "totalNonSpams": totalNonSpams};
         }
-        input.onkeyup = () => {
+        const updateVisible = () => {
             let tokens = tokenize(input.value);
             stripped.innerHTML = tokens.join(" ");
             let tableHTML = "";
+            let allWeights = [];
             for (token of tokens) {
                 let weighting = findTokenWeighting(token);
-                tableHTML += `<tr><td>${token}</td><td>${weighting.weight.toFixed(2)}</td><td>${weighting.spamCount}</td><td>${weighting.totalSpams}</td><td>${weighting.nonSpamCount}</td><td>${weighting.totalNonSpams}</td></tr>`;
+                tableHTML += `<tr><td>${token}</td><td>${weighting.weight.toFixed(2)}</td></tr>`;
+                allWeights.push(weighting.weight);
             }
+            let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
+            allWeights.map(n => 1 - n);
+            let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
+            totalDenominator += totalNumerator;
+            totalDenominator = totalDenominator || 1;
+            tableHTML += `<tr><td>Total</td><td>${totalNumerator / totalDenominator}</td></tr>`;
             table.innerHTML = tableHTML;
         };
+        input.onkeyup = updateVisible;
+        isMigrated.onchange = updateVisible;
         });
     </script>
 </body>
