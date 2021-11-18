@@ -66,7 +66,7 @@
             var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
             weight = Math.max(weight, 0.01);
             weight = Math.min(weight, 0.99);
-            return {"weight": weight || 0.99, "spamCount": spamCount, "totalSpams": totalSpams, "nonSpamCount": nonSpamCount, "totalNonSpams": totalNonSpams};
+            return weight;
         }
         const updateVisible = () => {
             let tokens = tokenize(input.value);
@@ -75,8 +75,9 @@
             let allWeights = [];
             for (token of tokens) {
                 let weighting = findTokenWeighting(token);
-                tableHTML += `<tr><td>${token}</td><td>${weighting.weight.toFixed(2)}</td></tr>`;
-                allWeights.push(weighting.weight);
+                if (!weighting) continue;
+                tableHTML += `<tr><td>${token}</td><td>${weighting.toFixed(2)}</td></tr>`;
+                allWeights.push(weighting);
             }
             let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
             console.log(allWeights);
