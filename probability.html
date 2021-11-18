@@ -66,14 +66,16 @@
             var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
             return {"weight": weight, "spamCount": spamCount, "totalSpams": totalSpams, "nonSpamCount": nonSpamCount, "totalNonSpams": totalNonSpams};
         }
-        console.log(findTokenWeighting("bitcoin"));
-        console.log(findTokenWeighting("ah"));
-        console.log(findTokenWeighting("coins"));
-        isMigrated.checked = false;
-        console.log(findTokenWeighting("bitcoin"));
-        console.log(findTokenWeighting("ah"));
-        console.log(findTokenWeighting("coins"));
-        console.log(findTokenWeighting);
+        input.onkeyup = () => {
+            let tokens = tokenize(input.value);
+            stripped.innerHTML = tokens.join(" ");
+            let tableHTML = "";
+            for (token of tokens) {
+                let weighting = findTokenWeighting(token);
+                tableHTML += `<tr><td>${token}</td><td>${weighting.weight.toFixed(2)}</td><td>${weighting.spamCount}</td><td>${weighting.totalSpams}</td><td>${weighting.nonSpamCount}</td><td>${weighting.totalNonSpams}</td></tr>`;
+            }
+            table.innerHTML = tableHTML;
+        };
         });
     </script>
 </body>
