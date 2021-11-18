@@ -33,6 +33,7 @@
     <h2>Stripped version</h2>
     <p id="stripped"></p>
     <h2>Classification</h2>
+    <p>(Numbers are decimal, and higher means more likely to be a spam, so 0.4 mean 40% chance to be spam.</p>
     <table></table>
     <script>
         fetch("/messages.json").then(r => r.json()).then(messages => {
