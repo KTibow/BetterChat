@@ -23,7 +23,7 @@
 </head>
 <body>
     <h1>Test out the Better Chat classifier</h1>
-    Is the sender unmigrated (influences if it could be IRL trading)? <input type="checkbox" checked><br>
+    Is the sender migrated (migrated accounts can't be bots)? <input type="checkbox" checked><br>
     <input type="text" id="input" placeholder="Enter a message to classify">
     <h2>Stripped version</h2>
     <p id="stripped"></p>
@@ -56,7 +56,7 @@
                     if (messageTokens.includes(token)) {
                         spamCount++;
                     }
-                } else {
+                } else if (messages[message] == "") {
                     totalNonSpams++;
                     if (messageTokens.includes(token)) {
                         nonSpamCount++;
