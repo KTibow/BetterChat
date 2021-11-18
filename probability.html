@@ -63,13 +63,16 @@
                     }
                 }
             }
-            return (spamCount / totalSpams)
-                /
-                (nonSpamCount / totalNonSpams + spamCount / totalSpams);
+            var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
+            return {"weight": weight, "spamCount": spamCount, "totalSpams": totalSpams, "nonSpamCount": nonSpamCount, "totalNonSpams": totalNonSpams};
         }
         console.log(findTokenWeighting("bitcoin"));
-        console.log(findTokenWeighting("ethereum"));
-        console.log(findTokenWeighting("litecoin"));
+        console.log(findTokenWeighting("ah"));
+        console.log(findTokenWeighting("coins"));
+        isMigrated.checked = false;
+        console.log(findTokenWeighting("bitcoin"));
+        console.log(findTokenWeighting("ah"));
+        console.log(findTokenWeighting("coins"));
         console.log(findTokenWeighting);
         });
     </script>
