@@ -77,10 +77,11 @@
                 allWeights.push(weighting.weight);
             }
             let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
+            console.log(allWeights);
             allWeights.map(n => 1 - n);
             let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
             totalDenominator += totalNumerator;
-            totalDenominator = totalDenominator || 1;
+            console.log(totalNumerator, totalDenominator);
             tableHTML += `<tr><td>Total</td><td>${totalNumerator / totalDenominator}</td></tr>`;
             table.innerHTML = tableHTML;
         };
