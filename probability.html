@@ -96,7 +96,7 @@
             allWeights = allWeights.map(n => {return 1 - n});
             let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
             totalDenominator += totalNumerator;
-            tableHTML += `<tr><td>Total</td><td>${totalNumerator / totalDenominator}</td></tr>`;
+            tableHTML += `<tr><td>Total</td><td>${(totalNumerator / totalDenominator).toFixed(5)}</td></tr>`;
             table.innerHTML = tableHTML;
         };
         input.onkeyup = updateVisible;
