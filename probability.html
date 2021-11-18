@@ -55,6 +55,13 @@
             for (message in messages) {
                 let messageContent = message.split(":").splice(1).join(":");
                 let messageTokens = tokenize(messageContent);
+                if (message.split(":")[0].includes("[VIP")) {
+                    messageTokens.push("*VIP");
+                } else if (message.split(":")[0].includes("[MVP")) {
+                    messageTokens.push("*MVP");
+                } else {
+                    messageTokens.push("*NON");
+                }
                 if (messages[message] == "b" || (messages[message] == "c" && !isMigrated.checked)) {
                     totalSpams++;
                     if (messageTokens.includes(token)) {
@@ -84,17 +91,15 @@
                 allWeights.push(weighting);
             }
             let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
-            console.log(allWeights);
             allWeights = allWeights.map(n => {return 1 - n});
-            console.log(allWeights);
             let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
             totalDenominator += totalNumerator;
-            console.log(totalNumerator, totalDenominator);
             tableHTML += `<tr><td>Total</td><td>${totalNumerator / totalDenominator}</td></tr>`;
             table.innerHTML = tableHTML;
         };
         input.onkeyup = updateVisible;
         isMigrated.onchange = updateVisible;
+        console.log(findTokenWeighting);
         });
     </script>
 </body>
