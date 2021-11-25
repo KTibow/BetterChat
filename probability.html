@@ -45,11 +45,11 @@
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
-        const findTokenWeighting = (token) => {
+        const findTokenWeighting = token => {
             // Probability:
             // percentage of spams that contain the token
             // over
-            // that number + number of non-spams that contain the token
+            // number of non-spams that contain the token + that number
             var spamCount = 0;
             var totalSpams = 0;
             var nonSpamCount = 0;
