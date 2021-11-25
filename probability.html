@@ -62,7 +62,7 @@
                 } else if (message.split(":")[0].includes("[MVP")) {
                     messageTokens.push("*MVP");
                 } else {
-                    messageTokens.push("*NON");
+                    messageTokens.push("*NO");
                 }
                 if (messages[message] == "b" || (messages[message] == "c" && !isMigrated.checked)) {
                     totalSpams++;
