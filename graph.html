@@ -21,6 +21,8 @@
     <canvas id="punctuationChart"></canvas>
     <h2>Number of tokens in message</h2>
     <canvas id="tokenCountChart"></canvas>
+    <h2>Sender's rank</h2>
+    <canvas id="senderRankChart"></canvas>
     <script>
         var baseChartData = {
             labels: [],
@@ -85,6 +87,14 @@
                 options: JSON.parse(JSON.stringify(baseChartOptions))
             }
         );
+        var senderRankChart = new Chart(
+            document.getElementById("senderRankChart"),
+            {
+                type: "bar",
+                data: JSON.parse(JSON.stringify(baseChartData)),
+                options: JSON.parse(JSON.stringify(baseChartOptions))
+            }
+        );
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
@@ -94,6 +104,7 @@
                 let capData = {};
                 let puncData = {};
                 let tokenData = {};
+                let rankData = {};
                 for (message in messages) {
                     let classification = messages[message];
                     let messageContent = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3];
@@ -104,6 +115,7 @@
                     let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
                     let totalChars = messageContent.length;
                     let tokenCount = tokenize(messageContent).length;
+                    let senderRank = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[1];
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
                             "b": 0,
@@ -125,9 +137,17 @@
                             "": 0
                         };
                     }
+                    if (rankData[senderRank] === undefined) {
+                        rankData[senderRank] = {
+                            "b": 0,
+                            "c": 0,
+                            "": 0
+                        };
+                    }
                     capData[amountCapitalized][classification]++;
                     puncData[punctuationChars][classification]++;
                     tokenData[tokenCount][classification]++;
+                    rankData[senderRank][classification]++;
                 }
                 console.log(capData);
                 capData = Object.keys(capData)
@@ -160,6 +180,16 @@
                             "": tokenData[key][""]
                         }
                     });
+                rankData = Object.keys(rankData)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(key => {
+                        return {
+                            "rank": key,
+                            "b": rankData[key]["b"],
+                            "c": rankData[key]["c"],
+                            "": rankData[key][""]
+                        }
+                    });
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
                 capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
                 capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
@@ -175,6 +205,11 @@
                 tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
                 tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""]);
                 tokenCountChart.update();
+                senderRankChart.data.labels = rankData.map(data => data.rank);
+                senderRankChart.data.datasets[0].data = rankData.map(data => data.b);
+                senderRankChart.data.datasets[1].data = rankData.map(data => data.c);
+                senderRankChart.data.datasets[2].data = rankData.map(data => data[""]);
+                senderRankChart.update();
             });
     </script>
 </body>
