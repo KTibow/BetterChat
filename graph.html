@@ -20,90 +20,119 @@
     <h2>Spam/nonspam over amount of tokens</h2>
     <canvas id="tokenCountChart"></canvas>
     <script>
-        var capitalizationChart = document.getElementById("capitalizationChart");
-        var tokenCountChart = document.getElementById("tokenCountChart");
-        var capitalizationChartData = {
+        var baseChartData = {
             labels: [],
-            datasets: [{
-                label: "Trading",
-                data: [],
-                backgroundColor: "rgba(255, 128, 64, 0.5)",
-                borderColor: "rgba(255, 128, 64, 0.5)",
-                borderWidth: 1
-            }, {
-                label: "Advertising",
-                data: [],
-                backgroundColor: "rgba(64, 128, 255, 0.5)",
-                borderColor: "rgba(64, 128, 255, 0.5)",
-                borderWidth: 1
-            }, {
-                label: "Non-spam",
-                data: [],
-                backgroundColor: "rgba(64, 255, 32, 0.5)",
-                borderColor: "rgba(64, 255, 32, 0.5)",
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: "Trading",
+                    data: [],
+                    backgroundColor: "rgba(255, 128, 64, 0.5)",
+                    borderColor: "rgba(255, 128, 64, 1)",
+                    borderWidth: 1
+                },
+                {
+                    label: "Advertising",
+                    data: [],
+                    backgroundColor: "rgba(255, 64, 128, 0.5)",
+                    borderColor: "rgba(255, 64, 128, 1)",
+                    borderWidth: 1
+                },
+                {
+                    label: "Fine",
+                    data: [],
+                    backgroundColor: "rgba(128, 255, 64, 0.5)",
+                    borderColor: "rgba(128, 255, 64, 1)",
+                    borderWidth: 1
+                }
+            ]
         };
-        var tokenCountChartData = {
-            labels: [],
-            datasets: [{
-                label: "Trading",
-                data: [],
-                backgroundColor: "rgba(255, 128, 64, 0.5)",
-                borderColor: "rgba(255, 128, 64, 0.5)",
-                borderWidth: 1
-            }, {
-                label: "Advertising",
-                data: [],
-                backgroundColor: "rgba(64, 128, 255, 0.5)",
-                borderColor: "rgba(64, 128, 255, 0.5)",
-                borderWidth: 1
-            }, {
-                label: "Non-spam",
-                data: [],
-                backgroundColor: "rgba(64, 255, 32, 0.5)",
-                borderColor: "rgba(64, 255, 32, 0.5)",
-                borderWidth: 1
-            }]
-        };
-        var capitalizationChartOptions = {
-            title: {
-                display: true,
-                text: "Spam/nonspam over amount capitalized"
+        var baseChartOptions = {
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }
             }
         };
-        var tokenCountChartOptions = {
-            title: {
-                display: true,
-                text: "Spam/nonspam over amount of tokens"
+        var capitalizationChart = new Chart(
+            document.getElementById("capitalizationChart"),
+            {
+                type: "bar",
+                data: JSON.parse(JSON.stringify(baseChartData)),
+                options: JSON.parse(JSON.stringify(baseChartOptions))
             }
-        };
-        var capitalizationChart = new Chart(capitalizationChart, {
-            type: "bar",
-            data: capitalizationChartData,
-            options: capitalizationChartOptions
-        });
-        var tokenCountChart = new Chart(tokenCountChart, {
-            type: "bar",
-            data: tokenCountChartData,
-            options: tokenCountChartOptions
-        });
+        );
+        var tokenCountChart = new Chart(
+            document.getElementById("tokenCountChart"),
+            {
+                type: "bar",
+                data: JSON.parse(JSON.stringify(baseChartData)),
+                options: JSON.parse(JSON.stringify(baseChartOptions))
+            }
+        );
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
         fetch("/messages.json")
-            .then(resp => resp.json())
+            .then(response => response.json())
             .then(messages => {
+                let capData = {};
+                let tokenData = {};
                 for (message in messages) {
-                    let classification = ["b", "c", ""].indexOf(messages[message]);
-                    let capitalizedCharacters = message.replace(/[^A-Z]/g, "").length;
-                    let totalCharacters = message.replace(/[^a-zA-Z]/g, "").length;
-                    let capitalizedPercentage = capitalizedCharacters / totalCharacters;
-                    let tokens = tokenize(message);
-                    let tokenCount = tokens.length;
-                    capitalizationChartData.labels.push(classification);
-                    capitalizationChartData.datasets[classification].data.push(capitalizedPercentage.toFixed(1));
+                    let classification = messages[message];
+                    let capChars = message.replace(/[^A-Z]/g, "").length;
+                    let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
+                    let amountCapitalized = capChars / totalChars;
+                    amountCapitalized = amountCapitalized.toFixed(2);
+                    let tokenCount = tokenize(message).length;
+                    if (capData[amountCapitalized] === undefined) {
+                        capData[amountCapitalized] = {
+                            "b": 0,
+                            "c": 0,
+                            "": 0
+                        };
+                    }
+                    if (tokenData[tokenCount] === undefined) {
+                        tokenData[tokenCount] = {
+                            "b": 0,
+                            "c": 0,
+                            "": 0
+                        };
+                    }
+                    capData[amountCapitalized][classification]++;
+                    tokenData[tokenCount][classification]++;
                 }
+                capData = Object.keys(capData).sort().map(key => {
+                    return {
+                        "capAmount": key,
+                        "b": capData[key]["b"],
+                        "c": capData[key]["c"],
+                        "": capData[key][""],
+                    }
+                });
+                tokenData = Object.keys(tokenData).sort().map(key => {
+                    return {
+                        "tokenCount": key,
+                        "b": tokenData[key]["b"],
+                        "c": tokenData[key]["c"],
+                        "": tokenData[key][""],
+                    }
+                });
+                capitalizationChart.data.labels = capData.map(data => data.capAmount);
+                capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
+                capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
+                capitalizationChart.data.datasets[2].data = capData.map(data => data[""]);
+                capitalizationChart.update();
+                tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
+                tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
+                tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
+                tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""]);
+                tokenCountChart.update();
             });
     </script>
 </body>
