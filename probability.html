@@ -78,12 +78,15 @@
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
+        console.log("OUTSIDE OF MESSAGES");
         fetch("/messages.json")
             .then(response => response.json())
             .then(messages => {
+                console.log("INSIDE OF MESSAGES");
                 let capData = {};
                 let tokenData = {};
                 for (message in messages) {
+                    console.log("BEFORE PARSING MESSAGE");
                     let classification = messages[message];
                     let capChars = message.replace(/[^A-Z]/g, "").length;
                     let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
@@ -104,6 +107,7 @@
                             "": 0
                         };
                     }
+                    console.log("AFTER PARSING MESSAGE");
                     if (tokenCount <= 10 && classification != "") {
                         console.log(message);
                     } else {
