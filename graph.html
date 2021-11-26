@@ -129,6 +129,7 @@
                     puncData[punctuationChars][classification]++;
                     tokenData[tokenCount][classification]++;
                 }
+                console.log(capData);
                 capData = Object.keys(capData)
                     .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
