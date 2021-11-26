@@ -100,7 +100,7 @@
                     let capChars = messageContent.replace(/[^A-Z]/g, "").length;
                     let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalWordChars;
-                    amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
+                    amountCapitalized = String(Math.round(Math.sqrt(amountCapitalized) * 50) / 50);
                     let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
                     let totalChars = messageContent.length;
                     let tokenCount = tokenize(messageContent).length;
