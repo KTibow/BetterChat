@@ -17,7 +17,7 @@
     <h1>Stats about the messages</h1>
     <h2>Percent of message capitalized</h2>
     <canvas id="capitalizationChart"></canvas>
-    <h2>Percent of message punctuation</h2>
+    <h2>Number of punctuation in message</h2>
     <canvas id="punctuationChart"></canvas>
     <h2>Number of tokens in message</h2>
     <canvas id="tokenCountChart"></canvas>
@@ -103,8 +103,6 @@
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
                     let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
                     let totalChars = messageContent.length;
-                    let amountPunctuation = punctuationChars / totalChars;
-                    amountPunctuation = Math.round(Math.sqrt(amountPunctuation) * 50) / 50;
                     let tokenCount = tokenize(messageContent).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
@@ -113,8 +111,8 @@
                             "": 0
                         };
                     }
-                    if (puncData[amountPunctuation] === undefined) {
-                        puncData[amountPunctuation] = {
+                    if (puncData[punctuationChars] === undefined) {
+                        puncData[punctuationChars] = {
                             "b": 0,
                             "c": 0,
                             "": 0
@@ -128,7 +126,7 @@
                         };
                     }
                     capData[amountCapitalized][classification]++;
-                    puncData[amountPunctuation][classification]++;
+                    puncData[punctuationChars][classification]++;
                     tokenData[tokenCount][classification]++;
                 }
                 capData = Object.keys(capData)
