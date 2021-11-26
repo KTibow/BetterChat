@@ -109,7 +109,7 @@
             .then(resp => resp.json())
             .then(messages => {
                 for (message in messages) {
-                    let classification = ["b", "c", ""][messages[message]];
+                    let classification = ["b", "c", ""].indexOf(messages[message]);
                     let capitalizedCharacters = message.replace(/[^A-Z]/g, "").length;
                     let totalCharacters = message.replace(/[^a-zA-Z]/g, "").length;
                     let capitalizedPercentage = capitalizedCharacters / totalCharacters;
