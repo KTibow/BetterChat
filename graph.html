@@ -107,23 +107,27 @@
                     capData[amountCapitalized][classification]++;
                     tokenData[tokenCount][classification]++;
                 }
-                capData = Object.keys(capData).sort().map(key => {
-                    return {
-                        "capAmount": key,
-                        "b": capData[key]["b"],
-                        "c": capData[key]["c"],
-                        "": capData[key][""]
-                    }
-                });
+                capData = Object.keys(capData)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(key => {
+                        return {
+                            "capAmount": key,
+                            "b": capData[key]["b"],
+                            "c": capData[key]["c"],
+                            "": capData[key][""]
+                        }
+                    });
                 console.log(Object.keys(tokenData).sort());
-                tokenData = Object.keys(tokenData).sort().map(key => {
-                    return {
-                        "tokenCount": key,
-                        "b": tokenData[key]["b"],
-                        "c": tokenData[key]["c"],
-                        "": tokenData[key][""]
-                    }
-                });
+                tokenData = Object.keys(tokenData)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(key => {
+                        return {
+                            "tokenCount": key,
+                            "b": tokenData[key]["b"],
+                            "c": tokenData[key]["c"],
+                            "": tokenData[key][""]
+                        }
+                    });
                 console.log(tokenData);
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
                 capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
