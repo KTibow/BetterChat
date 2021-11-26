@@ -15,9 +15,11 @@
 </head>
 <body>
     <h1>Stats about the messages</h1>
-    <h2>Spam/nonspam over amount capitalized</h2>
+    <h2>Percent of message capitalized</h2>
     <canvas id="capitalizationChart"></canvas>
-    <h2>Spam/nonspam over amount of tokens</h2>
+    <h2>Percent of message punctuation</h2>
+    <canvas id="punctuationChart"></canvas>
+    <h2>Number of tokens in message</h2>
     <canvas id="tokenCountChart"></canvas>
     <script>
         var baseChartData = {
@@ -67,6 +69,14 @@
                 options: JSON.parse(JSON.stringify(baseChartOptions))
             }
         );
+        var punctuationChart = new Chart(
+            document.getElementById("punctuationChart"),
+            {
+                type: "bar",
+                data: JSON.parse(JSON.stringify(baseChartData)),
+                options: JSON.parse(JSON.stringify(baseChartOptions))
+            }
+        );
         var tokenCountChart = new Chart(
             document.getElementById("tokenCountChart"),
             {
@@ -85,10 +95,11 @@
                 let tokenData = {};
                 for (message in messages) {
                     let classification = messages[message];
-                    let capChars = message.replace(/[^A-Z]/g, "").length;
-                    let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
+                    let capChars = message.replace(/[A-Z]/g, "").length;
+                    let totalChars = message.replace(/[a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalChars;
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
+                    let punctuationChars = message.replace(/[^\!\?\.]/g, "").length;
                     let tokenCount = tokenize(message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3]).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
@@ -103,9 +114,6 @@
                             "c": 0,
                             "": 0
                         };
-                    }
-                    if (tokenCount <= 4 && classification != "") {
-                        console.log(message);
                     }
                     capData[amountCapitalized][classification]++;
                     tokenData[tokenCount][classification]++;
