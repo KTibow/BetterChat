@@ -62,7 +62,7 @@
         var capitalizationChart = new Chart(
             document.getElementById("capitalizationChart"),
             {
-                type: "line",
+                type: "bar",
                 data: JSON.parse(JSON.stringify(baseChartData)),
                 options: JSON.parse(JSON.stringify(baseChartOptions))
             }
@@ -104,6 +104,9 @@
                             "": 0
                         };
                     }
+                    if (tokenCount < 5 && classification == "c") {
+                        console.log(message);
+                    }
                     capData[amountCapitalized][classification]++;
                     tokenData[tokenCount][classification]++;
                 }
@@ -117,7 +120,6 @@
                             "": capData[key][""]
                         }
                     });
-                console.log(Object.keys(tokenData).sort());
                 tokenData = Object.keys(tokenData)
                     .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
@@ -128,7 +130,6 @@
                             "": tokenData[key][""]
                         }
                     });
-                console.log(tokenData);
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
                 capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
                 capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
