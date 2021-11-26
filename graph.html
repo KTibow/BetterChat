@@ -112,8 +112,7 @@
                         "capAmount": key,
                         "b": capData[key]["b"],
                         "c": capData[key]["c"],
-                        "": capData[key][""],
-                        "total": capData[key]["b"] + capData[key]["c"] + capData[key][""]
+                        "": capData[key][""]
                     }
                 });
                 tokenData = Object.keys(tokenData).sort().map(key => {
@@ -121,19 +120,18 @@
                         "tokenCount": key,
                         "b": tokenData[key]["b"],
                         "c": tokenData[key]["c"],
-                        "": tokenData[key][""],
-                        "total": tokenData[key]["b"] + tokenData[key]["c"] + tokenData[key][""]
+                        "": tokenData[key][""]
                     }
                 });
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
-                capitalizationChart.data.datasets[0].data = capData.map(data => data.b / data.total);
-                capitalizationChart.data.datasets[1].data = capData.map(data => data.c / data.total);
-                capitalizationChart.data.datasets[2].data = capData.map(data => data[""] / data.total);
+                capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
+                capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
+                capitalizationChart.data.datasets[2].data = capData.map(data => data[""]);
                 capitalizationChart.update();
                 tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
-                tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b / data.total);
-                tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c / data.total);
-                tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""] / data.total);
+                tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
+                tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
+                tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""]);
                 tokenCountChart.update();
             });
     </script>
