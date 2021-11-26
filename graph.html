@@ -109,20 +109,14 @@
             .then(resp => resp.json())
             .then(messages => {
                 for (message in messages) {
-                    let classification = messages[message] == "" ? "Non-spam" : messages[message] == "b" ? "Trading" : "Advertising";
+                    let classification = ["b", "c", ""][messages[message]];
                     let capitalizedCharacters = message.replace(/[^A-Z]/g, "").length;
                     let totalCharacters = message.replace(/[^a-zA-Z]/g, "").length;
                     let capitalizedPercentage = capitalizedCharacters / totalCharacters;
                     let tokens = tokenize(message);
                     let tokenCount = tokens.length;
                     capitalizationChartData.labels.push(classification);
-                    capitalizationChartData.datasets[0].data.push(capitalizedPercentage);
-                    capitalizationChartData.datasets[1].data.push(1 - capitalizedPercentage);
-                    capitalizationChartData.datasets[2].data.push(0);
-                    tokenCountChartData.labels.push(classification);
-                    tokenCountChartData.datasets[0].data.push(tokenCount);
-                    tokenCountChartData.datasets[1].data.push(1 - tokenCount);
-                    tokenCountChartData.datasets[2].data.push(0);
+                    capitalizationChartData.datasets[classification].data.push(capitalizedPercentage.toFixed(1));
                 }
             });
     </script>
