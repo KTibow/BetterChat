@@ -106,6 +106,8 @@
                     }
                     if (tokenCount <= 10 && classification != "") {
                         console.log(message);
+                    } else {
+                        console.log("nope", tokenCount, classification, message);
                     }
                     capData[amountCapitalized][classification]++;
                     tokenData[tokenCount][classification]++;
