@@ -92,17 +92,27 @@
             .then(response => response.json())
             .then(messages => {
                 let capData = {};
+                let puncData = {};
                 let tokenData = {};
                 for (message in messages) {
                     let classification = messages[message];
-                    let capChars = message.replace(/[A-Z]/g, "").length;
-                    let totalChars = message.replace(/[a-zA-Z]/g, "").length;
+                    let capChars = message.replace(/[^A-Z]/g, "").length;
+                    let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalChars;
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
-                    let punctuationChars = message.replace(/[^\!\?\.]/g, "").length;
+                    let punctuationChars = message.replace(/[a-zA-Z]/g, "").length;
+                    let amountPunctuation = punctuationChars / totalChars;
+                    amountPunctuation = Math.round(Math.sqrt(amountPunctuation) * 50) / 50;
                     let tokenCount = tokenize(message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3]).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
+                            "b": 0,
+                            "c": 0,
+                            "": 0
+                        };
+                    }
+                    if (puncData[amountPunctuation] === undefined) {
+                        puncData[amountPunctuation] = {
                             "b": 0,
                             "c": 0,
                             "": 0
@@ -116,6 +126,7 @@
                         };
                     }
                     capData[amountCapitalized][classification]++;
+                    puncData[amountPunctuation][classification]++;
                     tokenData[tokenCount][classification]++;
                 }
                 capData = Object.keys(capData)
@@ -126,6 +137,16 @@
                             "b": capData[key]["b"],
                             "c": capData[key]["c"],
                             "": capData[key][""]
+                        }
+                    });
+                puncData = Object.keys(puncData)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(key => {
+                        return {
+                            "puncAmount": key,
+                            "b": puncData[key]["b"],
+                            "c": puncData[key]["c"],
+                            "": puncData[key][""]
                         }
                     });
                 tokenData = Object.keys(tokenData)
@@ -143,6 +164,10 @@
                 capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
                 capitalizationChart.data.datasets[2].data = capData.map(data => data[""]);
                 capitalizationChart.update();
+                punctuationChart.data.labels = puncData.map(data => data.puncAmount);
+                punctuationChart.data.datasets[0].data = puncData.map(data => data.b);
+                punctuationChart.data.datasets[1].data = puncData.map(data => data.c);
+                punctuationChart.data.datasets[2].data = puncData.map(data => data[""]);
                 tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
                 tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
                 tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
