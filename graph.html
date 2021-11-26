@@ -89,7 +89,7 @@
                     let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalChars;
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
-                    let tokenCount = tokenize(message.match(/.*: (.*)/)[1]).length;
+                    let tokenCount = tokenize(message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3]).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
                             "b": 0,
