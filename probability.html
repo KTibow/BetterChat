@@ -3,150 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message Stats Chart</title>
+    <title>Classifier Test | Better Chat</title>
     <style>
         body {
             font-family: system-ui;
             background-color: #234;
             color: white;
         }
+        ::placeholder {
+            color: #ccc;
+        }
+        input {
+            border: none;
+            background-color: #345;
+            color: white;
+            padding: 0.5em;
+        }
+        td {
+            background-color: #345;
+            padding: 0.5em;
+            margin: 0.5em;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
 </head>
 <body>
-    <h1>Stats about the messages</h1>
-    <h2>Spam/nonspam over amount capitalized</h2>
-    <canvas id="capitalizationChart"></canvas>
-    <h2>Spam/nonspam over amount of tokens</h2>
-    <canvas id="tokenCountChart"></canvas>
+    <h1>Test out the Better Chat classifier</h1>
+    Is the sender migrated (migrated accounts can't be bots)? <input type="checkbox" checked><br>
+    <input type="text" id="input" placeholder="Enter a message to classify">
+    <h2>Stripped version</h2>
+    <p id="stripped"></p>
+    <h2>Classification</h2>
+    <p>(Numbers are decimal, and higher means more likely to be a spam, so 0.4 mean 40% chance to be spam.</p>
+    <table></table>
     <script>
-        var baseChartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Trading",
-                    data: [],
-                    backgroundColor: "rgba(255, 128, 64, 0.5)",
-                    borderColor: "rgba(255, 128, 64, 1)",
-                    borderWidth: 1
-                },
-                {
-                    label: "Advertising",
-                    data: [],
-                    backgroundColor: "rgba(255, 64, 128, 0.5)",
-                    borderColor: "rgba(255, 64, 128, 1)",
-                    borderWidth: 1
-                },
-                {
-                    label: "Fine",
-                    data: [],
-                    backgroundColor: "rgba(128, 255, 64, 0.5)",
-                    borderColor: "rgba(128, 255, 64, 1)",
-                    borderWidth: 1
-                }
-            ]
-        };
-        var baseChartOptions = {
-            scales: {
-                x: {
-                    stacked: true
-                },
-                y: {
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-        var capitalizationChart = new Chart(
-            document.getElementById("capitalizationChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
-            }
-        );
-        var tokenCountChart = new Chart(
-            document.getElementById("tokenCountChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
-            }
-        );
+        fetch("/messages.json").then(r => r.json()).then(messages => {
+        // messages is an object with the key being each message and the value being the classification
+        const isMigrated = document.querySelector("input[type='checkbox']");
+        const input = document.querySelector("#input");
+        const stripped = document.querySelector("#stripped");
+        const table = document.querySelector("table");
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
-        console.log("OUTSIDE OF MESSAGES");
-        fetch("/messages.json")
-            .then(response => response.json())
-            .then(messages => {
-                console.log("INSIDE OF MESSAGES");
-                let capData = {};
-                let tokenData = {};
-                for (message in messages) {
-                    console.log("BEFORE PARSING MESSAGE");
-                    let classification = messages[message];
-                    let capChars = message.replace(/[^A-Z]/g, "").length;
-                    let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
-                    let amountCapitalized = capChars / totalChars;
-                    amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
-                    let tokenCount = tokenize(message).length;
-                    if (capData[amountCapitalized] === undefined) {
-                        capData[amountCapitalized] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    if (tokenData[tokenCount] === undefined) {
-                        tokenData[tokenCount] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    console.log("AFTER PARSING MESSAGE");
-                    if (tokenCount <= 10 && classification != "") {
-                        console.log(message);
-                    } else {
-                        console.log("nope", tokenCount, classification, message);
-                    }
-                    capData[amountCapitalized][classification]++;
-                    tokenData[tokenCount][classification]++;
+        const findTokenWeighting = token => {
+            // Probability:
+            // percentage of spams that contain the token
+            // over
+            // number of non-spams that contain the token + that number
+            var spamCount = 0;
+            var totalSpams = 0;
+            var nonSpamCount = 0;
+            var totalNonSpams = 0;
+            for (message in messages) {
+                let messageContent = message.split(":").splice(1).join(":");
+                let messageTokens = tokenize(messageContent);
+                if (message.split(":")[0].includes("[VIP")) {
+                    messageTokens.push("*VIP");
+                } else if (message.split(":")[0].includes("[MVP")) {
+                    messageTokens.push("*MVP");
+                } else {
+                    messageTokens.push("*NO");
                 }
-                capData = Object.keys(capData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "capAmount": key,
-                            "b": capData[key]["b"],
-                            "c": capData[key]["c"],
-                            "": capData[key][""]
-                        }
-                    });
-                tokenData = Object.keys(tokenData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "tokenCount": key,
-                            "b": tokenData[key]["b"],
-                            "c": tokenData[key]["c"],
-                            "": tokenData[key][""]
-                        }
-                    });
-                capitalizationChart.data.labels = capData.map(data => data.capAmount);
-                capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
-                capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
-                capitalizationChart.data.datasets[2].data = capData.map(data => data[""]);
-                capitalizationChart.update();
-                tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
-                tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
-                tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
-                tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""]);
-                tokenCountChart.update();
-            });
+                if (message.replace(/[^a-z]/g, "").length < message.replace(/[^A-Z]/g, "").length) {
+                    messageTokens.push("*UPPER");
+                } else {
+                    messageTokens.push("*LOWER");
+                }
+                if (messages[message] == "b" || (messages[message] == "c" && !isMigrated.checked)) {
+                    totalSpams++;
+                    if (messageTokens.includes(token)) {
+                        spamCount++;
+                    }
+                } else if (messages[message] == "") {
+                    totalNonSpams++;
+                    if (messageTokens.includes(token)) {
+                        nonSpamCount++;
+                    }
+                }
+            }
+            var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
+            weight = Math.max(weight, 0.01);
+            weight = Math.min(weight, 0.99);
+            return weight;
+        }
+        const updateVisible = () => {
+            let tokens = tokenize(input.value);
+            stripped.innerHTML = tokens.join(" ");
+            let tableHTML = "";
+            let allWeights = [];
+            for (token of tokens) {
+                let weighting = findTokenWeighting(token);
+                if (!weighting) continue;
+                tableHTML += `<tr><td>${token}</td><td>${weighting.toFixed(2)}</td></tr>`;
+                allWeights.push(weighting);
+            }
+            let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
+            allWeights = allWeights.map(n => {return 1 - n});
+            let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
+            totalDenominator += totalNumerator;
+            tableHTML += `<tr><td>Total</td><td>${(totalNumerator / totalDenominator).toFixed(5)}</td></tr>`;
+            table.innerHTML = tableHTML;
+        };
+        input.onkeyup = updateVisible;
+        isMigrated.onchange = updateVisible;
+        console.log(findTokenWeighting);
+        });
     </script>
 </body>
 </html>
