@@ -88,7 +88,6 @@
                     let capChars = message.replace(/[^A-Z]/g, "").length;
                     let totalChars = message.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalChars;
-                    amountCapitalized = amountCapitalized.toFixed(2);
                     let tokenCount = tokenize(message).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
