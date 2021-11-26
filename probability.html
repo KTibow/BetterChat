@@ -64,7 +64,9 @@
                 } else {
                     messageTokens.push("*NO");
                 }
-                if (message.replace(/[^a-z]/g, "").length < message.replace(/[^A-Z]/g, "").length) {
+                let uppercaseCount = message.replace(/[^A-Z]/g, "").length;
+                let totalCount = message.replace(/[^a-zA-Z]/g, "").length;
+                if (uppercaseCount >= totalCount * 2 / 3) {
                     messageTokens.push("*UPPER");
                 } else {
                     messageTokens.push("*LOWER");
