@@ -111,6 +111,7 @@
                     let messageContent = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3];
                     let capChars = messageContent.replace(/[^A-Z]/g, "").length;
                     let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
+                    if (totalWordChars == 0) continue;
                     let amountCapitalized = capChars / totalWordChars;
                     amountCapitalized = String(Math.round(Math.sqrt(amountCapitalized) * 50) / 50);
                     let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
@@ -151,7 +152,7 @@
                     rankData[senderRank][classification]++;
                 }
                 capData = Object.keys(capData)
-                    .sort((a, b) => isNaN(parseInt(a) - parseInt(b)) ? 0 : parseInt(a) - parseInt(b))
+                    .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
                         return {
                             "capAmount": key,
@@ -161,7 +162,7 @@
                         }
                     });
                 puncData = Object.keys(puncData)
-                    .sort((a, b) => isNaN(parseInt(a) - parseInt(b)) ? 0 : parseInt(a) - parseInt(b))
+                    .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
                         return {
                             "puncAmount": key,
@@ -171,7 +172,7 @@
                         }
                     });
                 tokenData = Object.keys(tokenData)
-                    .sort((a, b) => isNaN(parseInt(a) - parseInt(b)) ? 0 : parseInt(a) - parseInt(b))
+                    .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
                         return {
                             "tokenCount": key,
@@ -181,7 +182,7 @@
                         }
                     });
                 rankData = Object.keys(rankData)
-                    .sort((a, b) => isNaN(parseInt(a) - parseInt(b)) ? 0 : parseInt(a) - parseInt(b))
+                    .sort((a, b) => parseInt(a) - parseInt(b))
                     .map(key => {
                         return {
                             "rank": key,
