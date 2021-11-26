@@ -115,6 +115,7 @@
                         "": capData[key][""]
                     }
                 });
+                console.log(Object.keys(tokenData).sort());
                 tokenData = Object.keys(tokenData).sort().map(key => {
                     return {
                         "tokenCount": key,
@@ -123,6 +124,7 @@
                         "": tokenData[key][""]
                     }
                 });
+                console.log(tokenData);
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
                 capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
                 capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
