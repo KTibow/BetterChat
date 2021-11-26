@@ -96,15 +96,16 @@
                 let tokenData = {};
                 for (message in messages) {
                     let classification = messages[message];
-                    let capChars = message.replace(/[^A-Z]/g, "").length;
-                    let totalWordChars = message.replace(/[^a-zA-Z]/g, "").length;
+                    let messageContent = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3];
+                    let capChars = messageContent.replace(/[^A-Z]/g, "").length;
+                    let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalWordChars;
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
-                    let punctuationChars = message.replace(/[a-zA-Z]/g, "").length;
-                    let totalChars = message.length;
+                    let punctuationChars = messageContent.replace(/[a-zA-Z]/g, "").length;
+                    let totalChars = messageContent.length;
                     let amountPunctuation = punctuationChars / totalChars;
                     amountPunctuation = Math.round(Math.sqrt(amountPunctuation) * 50) / 50;
-                    let tokenCount = tokenize(message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3]).length;
+                    let tokenCount = tokenize(messageContent).length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
                             "b": 0,
@@ -169,6 +170,7 @@
                 punctuationChart.data.datasets[0].data = puncData.map(data => data.b);
                 punctuationChart.data.datasets[1].data = puncData.map(data => data.c);
                 punctuationChart.data.datasets[2].data = puncData.map(data => data[""]);
+                punctuationChart.update();
                 tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
                 tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
                 tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
