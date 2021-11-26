@@ -64,6 +64,11 @@
                 } else {
                     messageTokens.push("*NO");
                 }
+                if (message.replace(/[^a-z]/g, "").length < message.replace(/[^A-Z]/g, "").length) {
+                    messageTokens.push("*UPPER");
+                } else {
+                    messageTokens.push("*LOWER");
+                }
                 if (messages[message] == "b" || (messages[message] == "c" && !isMigrated.checked)) {
                     totalSpams++;
                     if (messageTokens.includes(token)) {
