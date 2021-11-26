@@ -101,7 +101,7 @@
                     let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
                     let amountCapitalized = capChars / totalWordChars;
                     amountCapitalized = Math.round(Math.sqrt(amountCapitalized) * 50) / 50;
-                    let punctuationChars = messageContent.replace(/[a-zA-Z]/g, "").length;
+                    let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
                     let totalChars = messageContent.length;
                     let amountPunctuation = punctuationChars / totalChars;
                     amountPunctuation = Math.round(Math.sqrt(amountPunctuation) * 50) / 50;
