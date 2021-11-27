@@ -243,11 +243,11 @@
                 senderRankChart.data.datasets[1].data = rankData.map(data => data.c);
                 senderRankChart.data.datasets[2].data = rankData.map(data => data[""]);
                 senderRankChart.update();
-                capNameChart.data.labels = capNameData.map(data => data.capName);
-                capNameChart.data.datasets[0].data = capNameData.map(data => data.b);
-                capNameChart.data.datasets[1].data = capNameData.map(data => data.c);
-                capNameChart.data.datasets[2].data = capNameData.map(data => data[""]);
-                capNameChart.update();
+                senderCapChart.data.labels = capNameData.map(data => data.capName);
+                senderCapChart.data.datasets[0].data = capNameData.map(data => data.b);
+                senderCapChart.data.datasets[1].data = capNameData.map(data => data.c);
+                senderCapChart.data.datasets[2].data = capNameData.map(data => data[""]);
+                senderCapChart.update();
             });
     </script>
 </body>
