@@ -23,6 +23,8 @@
     <canvas id="tokenCountChart"></canvas>
     <h2>Sender's rank</h2>
     <canvas id="senderRankChart"></canvas>
+    <h2>Sender's username capitalization</h2>
+    <canvas id="senderCapitalizationChart"></canvas>
     <h2>
     <script>
         var baseChartData = {
@@ -96,6 +98,14 @@
                 options: JSON.parse(JSON.stringify(baseChartOptions))
             }
         );
+        var senderCapitalizationChart = new Chart(
+            document.getElementById("senderCapitalizationChart"),
+            {
+                type: "bar",
+                data: JSON.parse(JSON.stringify(baseChartData)),
+                options: JSON.parse(JSON.stringify(baseChartOptions))
+            }
+        );
         const tokenize = str => {
             return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
         }
@@ -106,6 +116,7 @@
                 let puncData = {};
                 let tokenData = {};
                 let rankData = {};
+                let capNameData = {};
                 for (message in messages) {
                     let classification = messages[message];
                     let messageContent = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3];
@@ -118,6 +129,9 @@
                     let totalChars = messageContent.length;
                     let tokenCount = tokenize(messageContent).length;
                     let senderRank = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[1] || "None";
+                    let senderName = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[2];
+                    let senderCapChars = senderName.replace(/[^A-Z]/g, "").length;
+                    let senderTotalWordChars = senderName.replace(/[^a-zA-Z]/g, "").length;
                     if (capData[amountCapitalized] === undefined) {
                         capData[amountCapitalized] = {
                             "b": 0,
@@ -146,10 +160,18 @@
                             "": 0
                         };
                     }
+                    if (capNameData[senderCapChars] === undefined) {
+                        capNameData[senderCapChars] = {
+                            "b": 0,
+                            "c": 0,
+                            "": 0
+                        };
+                    }
                     capData[amountCapitalized][classification]++;
                     puncData[punctuationChars][classification]++;
                     tokenData[tokenCount][classification]++;
                     rankData[senderRank][classification]++;
+                    capNameData[senderCapChars][classification]++;
                 }
                 capData = Object.keys(capData)
                     .sort((a, b) => parseInt(a) - parseInt(b))
@@ -191,6 +213,16 @@
                             "": rankData[key][""]
                         }
                     });
+                capNameData = Object.keys(capNameData)
+                    .sort((a, b) => parseInt(a) - parseInt(b))
+                    .map(key => {
+                        return {
+                            "capName": key,
+                            "b": capNameData[key]["b"],
+                            "c": capNameData[key]["c"],
+                            "": capNameData[key][""]
+                        }
+                    });
                 capitalizationChart.data.labels = capData.map(data => data.capAmount);
                 capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
                 capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
@@ -211,6 +243,11 @@
                 senderRankChart.data.datasets[1].data = rankData.map(data => data.c);
                 senderRankChart.data.datasets[2].data = rankData.map(data => data[""]);
                 senderRankChart.update();
+                capNameChart.data.labels = capNameData.map(data => data.capName);
+                capNameChart.data.datasets[0].data = capNameData.map(data => data.b);
+                capNameChart.data.datasets[1].data = capNameData.map(data => data.c);
+                capNameChart.data.datasets[2].data = capNameData.map(data => data[""]);
+                capNameChart.update();
             });
     </script>
 </body>
