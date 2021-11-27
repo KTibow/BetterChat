@@ -69,6 +69,8 @@
                         } else {
                             messageTokens.push("*LOWER");
                         }
+                        messageTokens.push("*PUNC" + message.replace(/[^a-zA-Z ]/g, "").length);
+                        messageTokens.push("*TOKEN" + messageTokens.length);
                         if (data[message] == "b" || data[message] == "c") {
                             totalSpams++;
                             if (messageTokens.includes(token)) {
@@ -121,6 +123,13 @@
                     } else {
                         metaTokens.push("*NO");
                     }
+                    if (message.replace(/[^a-z]/g, "").length != message.replace(/[^a-zA-Z]/g, "").length) {
+                        metaTokens.push("*UPPER");
+                    } else {
+                        metaTokens.push("*LOWER");
+                    }
+                    metaTokens.push("*PUNC" + message.replace(/[^a-zA-Z ]/g, "").length);
+                    metaTokens.push("*TOKEN" + messageTokens.length);
                     document.querySelector("table").innerHTML += `
                     <tr>
                         <td>${message}</td>
