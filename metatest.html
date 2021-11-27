@@ -104,6 +104,7 @@
                     return totalNumerator / totalDenominator;
                 }
                 console.log(findTokenWeighting, findChatWeighting);
+                let allMessages = [];
                 for (message in data) {
                     let messageContent = message.split(":").splice(1).join(":");
                     let messageTokens = tokenize(messageContent);
@@ -134,14 +135,24 @@
                         discrimTokens.push("*NO");
                     }
                     discrimTokens.push("*SENDERCAPS" + message.split(":")[0].replace(/[^A-Z]/g, "").length);
+                    allMessages.push({
+                        message: message,
+                        spam: ["b", "c"].includes(data[message]),
+                        tokensWeight: findChatWeighting(messageTokens).toFixed(3),
+                        metaWeight: findChatWeighting(metaTokens).toFixed(3),
+                        discrimWeight: findChatWeighting(discrimTokens).toFixed(3)
+                    });
+                    console.log("Finished", message);
+                }
+                for (message of allMessages) {
                     document.querySelector("table").innerHTML += `
-                    <tr>
-                        <td>${message}</td>
-                        <td>${["b", "c"].includes(data[message])}</td>
-                        <td>${findChatWeighting(messageTokens).toFixed(3)}</td>
-                        <td>${findChatWeighting(metaTokens).toFixed(3)}</td>
-                        <td>${findChatWeighting(discrimTokens).toFixed(3)}</td>
-                    </tr>
+                        <tr>
+                            <td>${message.message}</td>
+                            <td>${message.spam ? "spam" : "fine"}</td>
+                            <td>${message.tokensWeight}</td>
+                            <td>${message.metaWeight}</td>
+                            <td>${message.discrimWeight}</td>
+                        </tr>
                     `;
                 }
             });
