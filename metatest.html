@@ -112,14 +112,14 @@
                         }
                     } else if (message.split(":")[0].includes("[MVP")) {
                         if (message.split(":")[0].includes("++")) {
-                            meta.push("*MVP++");
+                            metaTokens.push("*MVP++");
                         } else if (message.split(":")[0].includes("+")) {
-                            meta.push("*MVP+");
+                            metaTokens.push("*MVP+");
                         } else {
-                            meta.push("*MVP");
+                            metaTokens.push("*MVP");
                         }
                     } else {
-                        meta.push("*NO");
+                        metaTokens.push("*NO");
                     }
                     document.querySelector("table").innerHTML += `
                     <tr>
