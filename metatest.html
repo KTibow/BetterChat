@@ -23,8 +23,9 @@
         <tr>
             <th>Message</th>
             <th>Is spam</th>
-            <th>Before metadata technique</th>
-            <th>After metadata technique</th>
+            <th>Tokens</th>
+            <th>Metadata</th>
+            <th>Discriminatory</th>
         </tr>
     </table>
     <script>
@@ -71,6 +72,7 @@
                         }
                         messageTokens.push("*PUNC" + message.replace(/[^a-zA-Z ]/g, "").length);
                         messageTokens.push("*TOKEN" + messageTokens.length);
+                        messageTokens.push("*SENDERCAPS" + message.split(":")[0].replace(/[^A-Z]/g, "").length);
                         if (data[message] == "b" || data[message] == "c") {
                             totalSpams++;
                             if (messageTokens.includes(token)) {
@@ -106,23 +108,6 @@
                     let messageContent = message.split(":").splice(1).join(":");
                     let messageTokens = tokenize(messageContent);
                     let metaTokens = JSON.parse(JSON.stringify(messageTokens));
-                    if (message.split(":")[0].includes("[VIP")) {
-                        if (message.split(":")[0].includes("+")) {
-                            metaTokens.push("*VIP+");
-                        } else {
-                            metaTokens.push("*VIP");
-                        }
-                    } else if (message.split(":")[0].includes("[MVP")) {
-                        if (message.split(":")[0].includes("++")) {
-                            metaTokens.push("*MVP++");
-                        } else if (message.split(":")[0].includes("+")) {
-                            metaTokens.push("*MVP+");
-                        } else {
-                            metaTokens.push("*MVP");
-                        }
-                    } else {
-                        metaTokens.push("*NO");
-                    }
                     if (message.replace(/[^a-z]/g, "").length != message.replace(/[^a-zA-Z]/g, "").length) {
                         metaTokens.push("*UPPER");
                     } else {
@@ -130,6 +115,25 @@
                     }
                     metaTokens.push("*PUNC" + message.replace(/[^a-zA-Z ]/g, "").length);
                     metaTokens.push("*TOKEN" + messageTokens.length);
+                    let discrimTokens = JSON.parse(JSON.stringify(metaTokens));
+                    if (message.split(":")[0].includes("[VIP")) {
+                        if (message.split(":")[0].includes("+")) {
+                            discrimTokens.push("*VIP+");
+                        } else {
+                            discrimTokens.push("*VIP");
+                        }
+                    } else if (message.split(":")[0].includes("[MVP")) {
+                        if (message.split(":")[0].includes("++")) {
+                            discrimTokens.push("*MVP++");
+                        } else if (message.split(":")[0].includes("+")) {
+                            discrimTokens.push("*MVP+");
+                        } else {
+                            discrimTokens.push("*MVP");
+                        }
+                    } else {
+                        discrimTokens.push("*NO");
+                    }
+                    discrimTokens.push("*SENDERCAPS" + message.split(":")[0].replace(/[^A-Z]/g, "").length);
                     document.querySelector("table").innerHTML += `
                     <tr>
                         <td>${message}</td>
