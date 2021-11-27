@@ -86,8 +86,7 @@
                     weight = Math.min(weight, 0.99);
                     return weight;
                 }
-                const findChatWeighting = message => {
-                    let tokens = tokenize(message);
+                const findChatWeighting = tokens => {
                     let allWeights = [];
                     for (token of tokens) {
                         let weighting = findTokenWeighting(token);
@@ -100,12 +99,34 @@
                     totalDenominator += totalNumerator;
                     return totalNumerator / totalDenominator;
                 }
+                console.log(findTokenWeighting, findChatWeighting);
                 for (message in data) {
+                    let messageContent = message.split(":").splice(1).join(":");
+                    let messageTokens = tokenize(messageContent);
+                    let metaTokens = JSON.parse(JSON.stringify(messageTokens));
+                    if (message.split(":")[0].includes("[VIP")) {
+                        if (message.split(":")[0].includes("+")) {
+                            metaTokens.push("*VIP+");
+                        } else {
+                            metaTokens.push("*VIP");
+                        }
+                    } else if (message.split(":")[0].includes("[MVP")) {
+                        if (message.split(":")[0].includes("++")) {
+                            meta.push("*MVP++");
+                        } else if (message.split(":")[0].includes("+")) {
+                            meta.push("*MVP+");
+                        } else {
+                            meta.push("*MVP");
+                        }
+                    } else {
+                        meta.push("*NO");
+                    }
                     document.querySelector("table").innerHTML += `
                     <tr>
                         <td>${message}</td>
                         <td>${["b", "c"].includes(data[message])}</td>
-                        <td>${findChatWeighting(message.split(":").splice(1).join(":"))}</td>
+                        <td>${findChatWeighting(messageTokens).toFixed(3)}</td>
+                        <td>${findChatWeighting(metaTokens).toFixed(3)}</td>
                     </tr>
                     `;
                 }
