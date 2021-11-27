@@ -108,7 +108,7 @@
         }
         console.log(findTokenWeighting, findChatWeighting);
         let allMessages = [];
-        for (message in data) {
+        for (message in messages) {
             let messageContent = message.split(":").splice(1).join(":");
             let messageTokens = tokenize(messageContent);
             let metaTokens = JSON.parse(JSON.stringify(messageTokens));
