@@ -140,7 +140,7 @@
             discrimTokens.push("*SENDERCAPS" + message.split(":")[0].replace(/[^A-Z]/g, "").length);
             allMessages.push({
                 message: message,
-                spam: ["b", "c"].includes(data[message]),
+                spam: ["b", "c"].includes(messages[message]),
                 tokensWeight: findChatWeighting(messageTokens).toFixed(3),
                 metaWeight: findChatWeighting(metaTokens).toFixed(3),
                 discrimWeight: findChatWeighting(discrimTokens).toFixed(3)
