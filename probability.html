@@ -28,7 +28,6 @@
 </head>
 <body>
     <h1>Test out the Better Chat classifier</h1>
-    Is the sender migrated (migrated accounts can't be bots)? <input type="checkbox" checked><br>
     <input type="text" id="input" placeholder="Enter a message to classify">
     <h2>Stripped version</h2>
     <p id="stripped"></p>
@@ -38,7 +37,6 @@
     <script>
         fetch("/messages.json").then(r => r.json()).then(messages => {
         // messages is an object with the key being each message and the value being the classification
-        const isMigrated = document.querySelector("input[type='checkbox']");
         const input = document.querySelector("#input");
         const stripped = document.querySelector("#stripped");
         const table = document.querySelector("table");
@@ -69,12 +67,12 @@
                 } else {
                     messageTokens.push("*LOWER");
                 }
-                if (messages[message] == "b" || (messages[message] == "c" && !isMigrated.checked)) {
+                if (messages[message] == "b" || messages[message] == "c") {
                     totalSpams++;
                     if (messageTokens.includes(token)) {
                         spamCount++;
                     }
-                } else if (messages[message] == "") {
+                } else {
                     totalNonSpams++;
                     if (messageTokens.includes(token)) {
                         nonSpamCount++;
@@ -105,7 +103,6 @@
             table.innerHTML = tableHTML;
         };
         input.onkeyup = updateVisible;
-        isMigrated.onchange = updateVisible;
         console.log(findTokenWeighting);
         });
     </script>
