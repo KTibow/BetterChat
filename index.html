@@ -10,57 +10,39 @@
             background-color: #234;
             color: white;
         }
+        .headline {
+            font-size: 1.5rem;
+        }
         @media (orientation: landscape) {
             .headline > * {
                 display: inline-block;
                 width: calc(50% - 16px);
+                vertical-align: middle;
             }
-            .headline-left {
-                vertical-align: top;
-                margin-top: calc(50vh - 10rem);
-            }
-        }
-        .headline-left {
-            font-size: 1.5rem;
-            font-weight: bold;
         }
         button {
-            font-size: 1.5rem;
-            font-weight: bold;
             background-color: #345;
             color: white;
+            font-family: system-ui;
+            font-size: 1em;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 4px;
+            padding: 0.5em;
+            margin: 0.5em;
             width: 100%;
-            padding: 0.5rem 1rem;
-            margin: 0.5rem 0;
             cursor: pointer;
-        }
-        svg {
-            filter: drop-shadow(10px 10px 10px #0002) drop-shadow(-10px -10px 10px #0002);
-        }
-        @media (orientation: landscape) {
-            .main-left, .main-right {
-                display: inline-block;
-                width: calc(50% - 16px);
-            }
-        }
-        iframe {
-            border: none;
-            width: 100vmin;
-            aspect-ratio: 16/9;
         }
     </style>
 </head>
 <body>
     <div class="headline">
-        <div class="headline-left">
+        <div>
             <h1>BetterChat</h1>
-            <p>The first, only, and best chat filter for Hypixel.</p>
-            <button onclick="window.location.href = 'download'">Download</button>
-            <button onclick="window.location.href = 'probability'">Test the spam classifier</button>
+            <h2>The best chat filter for Hypixel.</h2>
+            <button onclick="window.location.href = '/download'">Download</button>
+            <button onclick="window.location.href = '/probability'">See the classifier</button>
         </div>
-        <div class="headline-right">
+        <div>
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 172 172">
                 <defs>
                     <linearGradient x1="14.33333" y1="28.66667" x2="157.66667" y2="28.66667" gradientUnits="userSpaceOnUse" id="color-1"><stop offset="0" stop-color="#42a3f2"/>
@@ -85,26 +67,9 @@
             </svg>
         </div>
     </div>
-    <main>
-        <div class="main-left">
-            <h2>What is BetterChat?</h2>
-            <p>Better Chat is a ChatTriggers mod to improve the chat experience on Hypixel Minecraft. It rewrites chat messages to make them consistent, and hides spam.</p>
-        </div>
-        <div class="main-right">
-            <h2>How does it work?</h2>
-            <p>BetterChat uses Bayesian analysis. It uses a list of past messages, and looks at the words commonly used for spam. If a message contains mostly words that are used in spam, it hides it.</p>
-        </div>
-        <h2>See what it's like to use it</h2>
-        <iframe width="100vmin" src="https://www.youtube.com/embed/EdfyUOBvQDw?controls=0"></iframe>
-        <p><i>That video might be outdated.</i></p>
-    </main>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MP1009LM4F"></script>
-    <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+    <h2>BetterChat is a ChatTriggers mod to improve your Hypixel chatting experience.</h2>
+    <p>BetterChat is a mod that uses Bayesian analysis to perform lightning-fast and accurate classification to hide spam. It hides people begging, advertising, etc.</p>
+    <p>It also has a couple other miscellaneous features, such as hiding ranks to remove clutter, and it's still an actively-developed mod.</p>
 
-    gtag('config', 'G-MP1009LM4F');
-    </script>
 </body>
 </html>
