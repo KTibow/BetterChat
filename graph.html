@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Message Stats Chart</title>
     <style>
-        body {
-            font-family: system-ui;
-            background-color: #234;
-            color: white;
-        }
+      body {
+          font-family: system-ui;
+          background-color: #234;
+          color: white;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0/dist/chart.min.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Stats about the messages</h1>
     <h2>Percent of message capitalized</h2>
     <canvas id="capitalizationChart"></canvas>
@@ -25,238 +25,232 @@
     <canvas id="senderRankChart"></canvas>
     <h2>Sender's username capitalization</h2>
     <canvas id="senderCapitalizationChart"></canvas>
-    <h2>
     <script>
-        var baseChartData = {
-            labels: [],
-            datasets: [
-                {
-                    label: "Trading",
-                    data: [],
-                    backgroundColor: "rgba(255, 128, 64, 0.5)",
-                    borderColor: "rgba(255, 128, 64, 1)",
-                    borderWidth: 1
-                },
-                {
-                    label: "Advertising",
-                    data: [],
-                    backgroundColor: "rgba(255, 64, 128, 0.5)",
-                    borderColor: "rgba(255, 64, 128, 1)",
-                    borderWidth: 1
-                },
-                {
-                    label: "Fine",
-                    data: [],
-                    backgroundColor: "rgba(128, 255, 64, 0.5)",
-                    borderColor: "rgba(128, 255, 64, 1)",
-                    borderWidth: 1
-                }
-            ]
-        };
-        var baseChartOptions = {
-            scales: {
-                x: {
-                    stacked: true
-                },
-                y: {
-                    stacked: true,
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }
+      var baseChartData = {
+        labels: [],
+        datasets: [
+          {
+            label: "Trading",
+            data: [],
+            backgroundColor: "rgba(255, 128, 64, 0.5)",
+            borderColor: "rgba(255, 128, 64, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Advertising",
+            data: [],
+            backgroundColor: "rgba(255, 64, 128, 0.5)",
+            borderColor: "rgba(255, 64, 128, 1)",
+            borderWidth: 1,
+          },
+          {
+            label: "Fine",
+            data: [],
+            backgroundColor: "rgba(128, 255, 64, 0.5)",
+            borderColor: "rgba(128, 255, 64, 1)",
+            borderWidth: 1,
+          },
+        ],
+      };
+      var baseChartOptions = {
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              beginAtZero: true,
+            },
+          },
+        },
+      };
+      var capitalizationChart = new Chart(document.getElementById("capitalizationChart"), {
+        type: "bar",
+        data: JSON.parse(JSON.stringify(baseChartData)),
+        options: JSON.parse(JSON.stringify(baseChartOptions)),
+      });
+      var punctuationChart = new Chart(document.getElementById("punctuationChart"), {
+        type: "bar",
+        data: JSON.parse(JSON.stringify(baseChartData)),
+        options: JSON.parse(JSON.stringify(baseChartOptions)),
+      });
+      var tokenCountChart = new Chart(document.getElementById("tokenCountChart"), {
+        type: "bar",
+        data: JSON.parse(JSON.stringify(baseChartData)),
+        options: JSON.parse(JSON.stringify(baseChartOptions)),
+      });
+      var senderRankChart = new Chart(document.getElementById("senderRankChart"), {
+        type: "bar",
+        data: JSON.parse(JSON.stringify(baseChartData)),
+        options: JSON.parse(JSON.stringify(baseChartOptions)),
+      });
+      var senderCapChart = new Chart(document.getElementById("senderCapitalizationChart"), {
+        type: "bar",
+        data: JSON.parse(JSON.stringify(baseChartData)),
+        options: JSON.parse(JSON.stringify(baseChartOptions)),
+      });
+      const tokenize = (str) => {
+        return str
+          .normalize("NFKC")
+          .replace(/[^\w\s]/g, " ")
+          .toLowerCase()
+          .trim()
+          .split(/\s+/);
+      };
+      fetch("messages.json")
+        .then((response) => response.json())
+        .then((messages) => {
+          let capData = {};
+          let puncData = {};
+          let tokenData = {};
+          let rankData = {};
+          let capNameData = {};
+          for (message in messages) {
+            let classification = messages[message];
+            let messageContent = message.match(
+              /^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/
+            )[3];
+            let capChars = messageContent.replace(/[^A-Z]/g, "").length;
+            let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
+            if (totalWordChars == 0) continue;
+            let amountCapitalized = capChars / totalWordChars;
+            amountCapitalized = String(Math.round(Math.sqrt(amountCapitalized) * 50) / 50);
+            let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
+            let totalChars = messageContent.length;
+            let tokenCount = tokenize(messageContent).length;
+            let senderRank =
+              message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[1] || "None";
+            let senderName = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[2];
+            let senderCapChars = senderName.replace(/[^A-Z]/g, "").length;
+            let senderTotalWordChars = senderName.replace(/[^a-zA-Z]/g, "").length;
+            if (capData[amountCapitalized] === undefined) {
+              capData[amountCapitalized] = {
+                b: 0,
+                c: 0,
+                "": 0,
+              };
             }
-        };
-        var capitalizationChart = new Chart(
-            document.getElementById("capitalizationChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
+            if (puncData[punctuationChars] === undefined) {
+              puncData[punctuationChars] = {
+                b: 0,
+                c: 0,
+                "": 0,
+              };
             }
-        );
-        var punctuationChart = new Chart(
-            document.getElementById("punctuationChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
+            if (tokenData[tokenCount] === undefined) {
+              tokenData[tokenCount] = {
+                b: 0,
+                c: 0,
+                "": 0,
+              };
             }
-        );
-        var tokenCountChart = new Chart(
-            document.getElementById("tokenCountChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
+            if (rankData[senderRank] === undefined) {
+              rankData[senderRank] = {
+                b: 0,
+                c: 0,
+                "": 0,
+              };
             }
-        );
-        var senderRankChart = new Chart(
-            document.getElementById("senderRankChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
+            if (capNameData[senderCapChars] === undefined) {
+              capNameData[senderCapChars] = {
+                b: 0,
+                c: 0,
+                "": 0,
+              };
             }
-        );
-        var senderCapChart = new Chart(
-            document.getElementById("senderCapitalizationChart"),
-            {
-                type: "bar",
-                data: JSON.parse(JSON.stringify(baseChartData)),
-                options: JSON.parse(JSON.stringify(baseChartOptions))
-            }
-        );
-        const tokenize = str => {
-            return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
-        }
-        fetch("/messages.json")
-            .then(response => response.json())
-            .then(messages => {
-                let capData = {};
-                let puncData = {};
-                let tokenData = {};
-                let rankData = {};
-                let capNameData = {};
-                for (message in messages) {
-                    let classification = messages[message];
-                    let messageContent = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[3];
-                    let capChars = messageContent.replace(/[^A-Z]/g, "").length;
-                    let totalWordChars = messageContent.replace(/[^a-zA-Z]/g, "").length;
-                    if (totalWordChars == 0) continue;
-                    let amountCapitalized = capChars / totalWordChars;
-                    amountCapitalized = String(Math.round(Math.sqrt(amountCapitalized) * 50) / 50);
-                    let punctuationChars = messageContent.replace(/[a-zA-Z ]/g, "").length;
-                    let totalChars = messageContent.length;
-                    let tokenCount = tokenize(messageContent).length;
-                    let senderRank = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[1] || "None";
-                    let senderName = message.match(/^(\[VIP\+?\] |\[MVP\+?\+?\] |)(\w{2,16}): (.*)$/)[2];
-                    let senderCapChars = senderName.replace(/[^A-Z]/g, "").length;
-                    let senderTotalWordChars = senderName.replace(/[^a-zA-Z]/g, "").length;
-                    if (capData[amountCapitalized] === undefined) {
-                        capData[amountCapitalized] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    if (puncData[punctuationChars] === undefined) {
-                        puncData[punctuationChars] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    if (tokenData[tokenCount] === undefined) {
-                        tokenData[tokenCount] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    if (rankData[senderRank] === undefined) {
-                        rankData[senderRank] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    if (capNameData[senderCapChars] === undefined) {
-                        capNameData[senderCapChars] = {
-                            "b": 0,
-                            "c": 0,
-                            "": 0
-                        };
-                    }
-                    capData[amountCapitalized][classification]++;
-                    puncData[punctuationChars][classification]++;
-                    tokenData[tokenCount][classification]++;
-                    rankData[senderRank][classification]++;
-                    capNameData[senderCapChars][classification]++;
-                }
-                capData = Object.keys(capData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "capAmount": key,
-                            "b": capData[key]["b"],
-                            "c": capData[key]["c"],
-                            "": capData[key][""]
-                        }
-                    });
-                puncData = Object.keys(puncData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "puncAmount": key,
-                            "b": puncData[key]["b"],
-                            "c": puncData[key]["c"],
-                            "": puncData[key][""]
-                        }
-                    });
-                tokenData = Object.keys(tokenData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "tokenCount": key,
-                            "b": tokenData[key]["b"],
-                            "c": tokenData[key]["c"],
-                            "": tokenData[key][""]
-                        }
-                    });
-                rankData = Object.keys(rankData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "rank": key,
-                            "b": rankData[key]["b"],
-                            "c": rankData[key]["c"],
-                            "": rankData[key][""]
-                        }
-                    });
-                capNameData = Object.keys(capNameData)
-                    .sort((a, b) => parseInt(a) - parseInt(b))
-                    .map(key => {
-                        return {
-                            "capName": key,
-                            "b": capNameData[key]["b"],
-                            "c": capNameData[key]["c"],
-                            "": capNameData[key][""]
-                        }
-                    });
-                capitalizationChart.data.labels = capData.map(data => data.capAmount);
-                capitalizationChart.data.datasets[0].data = capData.map(data => data.b);
-                capitalizationChart.data.datasets[1].data = capData.map(data => data.c);
-                capitalizationChart.data.datasets[2].data = capData.map(data => data[""]);
-                capitalizationChart.update();
-                punctuationChart.data.labels = puncData.map(data => data.puncAmount);
-                punctuationChart.data.datasets[0].data = puncData.map(data => data.b);
-                punctuationChart.data.datasets[1].data = puncData.map(data => data.c);
-                punctuationChart.data.datasets[2].data = puncData.map(data => data[""]);
-                punctuationChart.update();
-                tokenCountChart.data.labels = tokenData.map(data => data.tokenCount);
-                tokenCountChart.data.datasets[0].data = tokenData.map(data => data.b);
-                tokenCountChart.data.datasets[1].data = tokenData.map(data => data.c);
-                tokenCountChart.data.datasets[2].data = tokenData.map(data => data[""]);
-                tokenCountChart.update();
-                senderRankChart.data.labels = rankData.map(data => data.rank);
-                senderRankChart.data.datasets[0].data = rankData.map(data => data.b);
-                senderRankChart.data.datasets[1].data = rankData.map(data => data.c);
-                senderRankChart.data.datasets[2].data = rankData.map(data => data[""]);
-                senderRankChart.update();
-                senderCapChart.data.labels = capNameData.map(data => data.capName);
-                senderCapChart.data.datasets[0].data = capNameData.map(data => data.b);
-                senderCapChart.data.datasets[1].data = capNameData.map(data => data.c);
-                senderCapChart.data.datasets[2].data = capNameData.map(data => data[""]);
-                senderCapChart.update();
+            capData[amountCapitalized][classification]++;
+            puncData[punctuationChars][classification]++;
+            tokenData[tokenCount][classification]++;
+            rankData[senderRank][classification]++;
+            capNameData[senderCapChars][classification]++;
+          }
+          capData = Object.keys(capData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => {
+              return {
+                capAmount: key,
+                b: capData[key]["b"],
+                c: capData[key]["c"],
+                "": capData[key][""],
+              };
             });
+          puncData = Object.keys(puncData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => {
+              return {
+                puncAmount: key,
+                b: puncData[key]["b"],
+                c: puncData[key]["c"],
+                "": puncData[key][""],
+              };
+            });
+          tokenData = Object.keys(tokenData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => {
+              return {
+                tokenCount: key,
+                b: tokenData[key]["b"],
+                c: tokenData[key]["c"],
+                "": tokenData[key][""],
+              };
+            });
+          rankData = Object.keys(rankData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => {
+              return {
+                rank: key,
+                b: rankData[key]["b"],
+                c: rankData[key]["c"],
+                "": rankData[key][""],
+              };
+            });
+          capNameData = Object.keys(capNameData)
+            .sort((a, b) => parseInt(a) - parseInt(b))
+            .map((key) => {
+              return {
+                capName: key,
+                b: capNameData[key]["b"],
+                c: capNameData[key]["c"],
+                "": capNameData[key][""],
+              };
+            });
+          capitalizationChart.data.labels = capData.map((data) => data.capAmount);
+          capitalizationChart.data.datasets[0].data = capData.map((data) => data.b);
+          capitalizationChart.data.datasets[1].data = capData.map((data) => data.c);
+          capitalizationChart.data.datasets[2].data = capData.map((data) => data[""]);
+          capitalizationChart.update();
+          punctuationChart.data.labels = puncData.map((data) => data.puncAmount);
+          punctuationChart.data.datasets[0].data = puncData.map((data) => data.b);
+          punctuationChart.data.datasets[1].data = puncData.map((data) => data.c);
+          punctuationChart.data.datasets[2].data = puncData.map((data) => data[""]);
+          punctuationChart.update();
+          tokenCountChart.data.labels = tokenData.map((data) => data.tokenCount);
+          tokenCountChart.data.datasets[0].data = tokenData.map((data) => data.b);
+          tokenCountChart.data.datasets[1].data = tokenData.map((data) => data.c);
+          tokenCountChart.data.datasets[2].data = tokenData.map((data) => data[""]);
+          tokenCountChart.update();
+          senderRankChart.data.labels = rankData.map((data) => data.rank);
+          senderRankChart.data.datasets[0].data = rankData.map((data) => data.b);
+          senderRankChart.data.datasets[1].data = rankData.map((data) => data.c);
+          senderRankChart.data.datasets[2].data = rankData.map((data) => data[""]);
+          senderRankChart.update();
+          senderCapChart.data.labels = capNameData.map((data) => data.capName);
+          senderCapChart.data.datasets[0].data = capNameData.map((data) => data.b);
+          senderCapChart.data.datasets[1].data = capNameData.map((data) => data.c);
+          senderCapChart.data.datasets[2].data = capNameData.map((data) => data[""]);
+          senderCapChart.update();
+        });
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MP1009LM4F"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-    gtag('config', 'G-MP1009LM4F');
+      gtag("config", "G-MP1009LM4F");
     </script>
-</body>
+  </body>
 </html>

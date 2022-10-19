@@ -1,49 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Classifier Test | Better Chat</title>
     <style>
-        body {
-            font-family: system-ui;
-            background-color: #234;
-            color: white;
-        }
-        ::placeholder {
-            color: #ccc;
-        }
-        input {
-            border: none;
-            background-color: #345;
-            color: white;
-            padding: 0.5em;
-        }
-        td {
-            background-color: #345;
-            padding: 0.5em;
-            margin: 0.5em;
-        }
+      body {
+          font-family: system-ui;
+          background-color: #234;
+          color: white;
+      }
+      ::placeholder {
+          color: #ccc;
+      }
+      input {
+          border: none;
+          background-color: #345;
+          color: white;
+          padding: 0.5em;
+      }
+      td {
+          background-color: #345;
+          padding: 0.5em;
+          margin: 0.5em;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Test out the Better Chat classifier</h1>
-    <input type="text" id="input" placeholder="Enter a message to classify">
+    <input type="text" id="input" placeholder="Enter a message to classify" />
     <h2>Stripped version</h2>
     <p id="stripped"></p>
     <h2>Classification</h2>
-    <p>(Numbers are decimal, and higher means more likely to be a spam, so 0.4 mean 40% chance to be spam.</p>
+    <p>
+      (Numbers are decimal, and higher means more likely to be a spam, so 0.4 mean 40% chance to be
+      spam.
+    </p>
     <table></table>
     <script>
-        fetch("/messages.json").then(r => r.json()).then(messages => {
-        // messages is an object with the key being each message and the value being the classification
-        const input = document.querySelector("#input");
-        const stripped = document.querySelector("#stripped");
-        const table = document.querySelector("table");
-        const tokenize = str => {
-            return str.normalize("NFKC").replace(/[^\w\s]/g, " ").toLowerCase().trim().split(/\s+/);
-        }
-        const findTokenWeighting = token => {
+      fetch("messages.json")
+        .then((r) => r.json())
+        .then((messages) => {
+          // messages is an object with the key being each message and the value being the classification
+          const input = document.querySelector("#input");
+          const stripped = document.querySelector("#stripped");
+          const table = document.querySelector("table");
+          const tokenize = (str) => {
+            return str
+              .normalize("NFKC")
+              .replace(/[^\w\s]/g, " ")
+              .toLowerCase()
+              .trim()
+              .split(/\s+/);
+          };
+          const findTokenWeighting = (token) => {
             // Probability:
             // percentage of spams that contain the token
             // over
@@ -53,66 +63,73 @@
             var nonSpamCount = 0;
             var totalNonSpams = 0;
             for (message in messages) {
-                let messageContent = message.split(":").splice(1).join(":");
-                let messageTokens = tokenize(messageContent);
-                if (message.split(":")[0].includes("[VIP")) {
-                    messageTokens.push("*VIP");
-                } else if (message.split(":")[0].includes("[MVP")) {
-                    messageTokens.push("*MVP");
-                } else {
-                    messageTokens.push("*NO");
+              let messageContent = message.split(":").splice(1).join(":");
+              let messageTokens = tokenize(messageContent);
+              if (message.split(":")[0].includes("[VIP")) {
+                messageTokens.push("*VIP");
+              } else if (message.split(":")[0].includes("[MVP")) {
+                messageTokens.push("*MVP");
+              } else {
+                messageTokens.push("*NO");
+              }
+              if (message.replace(/[^a-z]/g, "").length < message.replace(/[^A-Z]/g, "").length) {
+                messageTokens.push("*UPPER");
+              } else {
+                messageTokens.push("*LOWER");
+              }
+              if (messages[message] == "b" || messages[message] == "c") {
+                totalSpams++;
+                if (messageTokens.includes(token)) {
+                  spamCount++;
                 }
-                if (message.replace(/[^a-z]/g, "").length < message.replace(/[^A-Z]/g, "").length) {
-                    messageTokens.push("*UPPER");
-                } else {
-                    messageTokens.push("*LOWER");
+              } else {
+                totalNonSpams++;
+                if (messageTokens.includes(token)) {
+                  nonSpamCount++;
                 }
-                if (messages[message] == "b" || messages[message] == "c") {
-                    totalSpams++;
-                    if (messageTokens.includes(token)) {
-                        spamCount++;
-                    }
-                } else {
-                    totalNonSpams++;
-                    if (messageTokens.includes(token)) {
-                        nonSpamCount++;
-                    }
-                }
+              }
             }
-            var weight = (spamCount / totalSpams) / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
+            var weight =
+              spamCount / totalSpams / (nonSpamCount / totalNonSpams + spamCount / totalSpams);
             weight = Math.max(weight, 0.01);
             weight = Math.min(weight, 0.99);
             return weight;
-        }
-        const updateVisible = () => {
+          };
+          const updateVisible = () => {
             let tokens = tokenize(input.value);
             stripped.innerHTML = tokens.join(" ");
             let tableHTML = "";
             let allWeights = [];
             for (token of tokens) {
-                let weighting = findTokenWeighting(token);
-                if (!weighting) continue;
-                tableHTML += `<tr><td>${token}</td><td>${weighting.toFixed(2)}</td></tr>`;
-                allWeights.push(weighting);
+              let weighting = findTokenWeighting(token);
+              if (!weighting) continue;
+              tableHTML += `<tr><td>${token}</td><td>${weighting.toFixed(2)}</td></tr>`;
+              allWeights.push(weighting);
             }
             let totalNumerator = allWeights.reduce((a, b) => a * b, 1);
-            allWeights = allWeights.map(n => {return 1 - n});
+            allWeights = allWeights.map((n) => {
+              return 1 - n;
+            });
             let totalDenominator = allWeights.reduce((a, b) => a * b, 1);
             totalDenominator += totalNumerator;
-            tableHTML += `<tr><td>Total</td><td>${(totalNumerator / totalDenominator).toFixed(5)}</td></tr>`;
+            tableHTML += `<tr><td>Total</td><td>${(totalNumerator / totalDenominator).toFixed(
+              5
+            )}</td></tr>`;
             table.innerHTML = tableHTML;
-        };
-        input.onkeyup = updateVisible;
-        console.log(findTokenWeighting);
+          };
+          input.onkeyup = updateVisible;
+          console.log(findTokenWeighting);
         });
     </script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-MP1009LM4F"></script>
     <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-    gtag('config', 'G-MP1009LM4F');
+      gtag("config", "G-MP1009LM4F");
     </script>
-</body>
+  </body>
 </html>

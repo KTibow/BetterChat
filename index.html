@@ -1,75 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BetterChat</title>
     <style>
-        body {
-            font-family: system-ui;
-            background-color: #234;
-            color: white;
-        }
-        .headline {
-            font-size: 1.5rem;
-        }
-        @media (orientation: landscape) {
-            .headline > * {
-                display: inline-block;
-                width: calc(50% - 16px);
-                vertical-align: middle;
-            }
-        }
-        button {
-            background-color: #345;
-            color: white;
-            font-family: system-ui;
-            font-size: 1em;
-            border: none;
-            border-radius: 4px;
-            padding: 0.5em;
-            margin: 0.5em;
-            width: 100%;
-            cursor: pointer;
-        }
+      body {
+          font-family: system-ui;
+          background-color: #234;
+          color: white;
+      }
+      .headline {
+          font-size: 1.5rem;
+      }
+      @media (orientation: landscape) {
+          .headline > * {
+              display: inline-block;
+              width: calc(50% - 16px);
+              vertical-align: middle;
+          }
+      }
+      button {
+          background-color: #345;
+          color: white;
+          font-family: system-ui;
+          font-size: 1em;
+          border: none;
+          border-radius: 4px;
+          padding: 0.5em;
+          margin: 0.5em;
+          width: 100%;
+          cursor: pointer;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="headline">
-        <div>
-            <h1>BetterChat</h1>
-            <h2>The best chat filter for Hypixel.</h2>
-            <button onclick="window.location.href = '/download'">Download</button>
-            <button onclick="window.location.href = '/probability'">See the classifier</button>
-        </div>
-        <div>
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 172 172">
-                <defs>
-                    <linearGradient x1="14.33333" y1="28.66667" x2="157.66667" y2="28.66667" gradientUnits="userSpaceOnUse" id="color-1"><stop offset="0" stop-color="#42a3f2"/>
-                        <stop offset="1" stop-color="#42a4eb"/>
-                    </linearGradient>
-                    <linearGradient x1="27.20825" y1="66.29167" x2="149.85858" y2="66.29167" gradientUnits="userSpaceOnUse" id="color-2"><stop offset="0" stop-color="#3079d6"/>
-                        <stop offset="1" stop-color="#297cd2"/>
-                    </linearGradient>
-                    <linearGradient x1="71.66667" y1="127.20833" x2="100.33333" y2="127.20833" gradientUnits="userSpaceOnUse" id="color-3">
-                        <stop offset="0" stop-color="#1d59b3"/><stop offset="1" stop-color="#195bbc"/>
-                    </linearGradient>
-                </defs>
-                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" style="mix-blend-mode: normal">
-                    <text x="40" font-size="0.33rem" fill="white" transform="rotate(10)">Dunext: Free 100m C01ns at fakesite com</text>
-                    <path d="M0,172v-172h172v172z" fill="none"/>
-                    <g>
-                        <path d="M150.5,35.83333h-129c-3.95958,0 -7.16667,-3.20708 -7.16667,-7.16667v0c0,-3.95958 3.20708,-7.16667 7.16667,-7.16667h129c3.95958,0 7.16667,3.20708 7.16667,7.16667v0c0,3.95958 -3.20708,7.16667 -7.16667,7.16667z" fill="url(#color-1)"/>
-                        <path d="M100.33333,96.75h-28.66667l-46.58333,-60.91667h121.83333z" fill="url(#color-2)"/>
-                        <path d="M100.33333,96.75h-28.66667v57.32975c0,2.66242 2.80217,4.39675 5.18508,3.2035l19.51842,-9.761c2.4295,-1.21117 3.96317,-3.69442 3.96317,-6.407z" fill="url(#color-3)"/>
-                    </g>
-                </g>
-            </svg>
-        </div>
+      <div>
+        <h1>BetterChat</h1>
+        <h2>The best chat filter for Hypixel.</h2>
+        <button onclick="window.location.href = 'download'">Download</button>
+        <button onclick="window.location.href = 'probability'">See the classifier</button>
+      </div>
+      <div>
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="0 0 172 172"
+        >
+          <defs>
+            <linearGradient
+              x1="14.33333"
+              y1="28.66667"
+              x2="157.66667"
+              y2="28.66667"
+              gradientUnits="userSpaceOnUse"
+              id="color-1"
+            >
+              <stop offset="0" stop-color="#42a3f2" />
+              <stop offset="1" stop-color="#42a4eb" />
+            </linearGradient>
+            <linearGradient
+              x1="27.20825"
+              y1="66.29167"
+              x2="149.85858"
+              y2="66.29167"
+              gradientUnits="userSpaceOnUse"
+              id="color-2"
+            >
+              <stop offset="0" stop-color="#3079d6" />
+              <stop offset="1" stop-color="#297cd2" />
+            </linearGradient>
+            <linearGradient
+              x1="71.66667"
+              y1="127.20833"
+              x2="100.33333"
+              y2="127.20833"
+              gradientUnits="userSpaceOnUse"
+              id="color-3"
+            >
+              <stop offset="0" stop-color="#1d59b3" />
+              <stop offset="1" stop-color="#195bbc" />
+            </linearGradient>
+          </defs>
+          <g
+            fill="none"
+            fill-rule="nonzero"
+            stroke="none"
+            stroke-width="1"
+            stroke-linecap="butt"
+            stroke-linejoin="miter"
+            stroke-miterlimit="10"
+            stroke-dasharray=""
+            stroke-dashoffset="0"
+            style="mix-blend-mode: normal"
+          >
+            <text x="40" font-size="0.33rem" fill="white" transform="rotate(10)">
+              Dunext: Free 100m C01ns at fakesite com
+            </text>
+            <path d="M0,172v-172h172v172z" fill="none" />
+            <g>
+              <path
+                d="M150.5,35.83333h-129c-3.95958,0 -7.16667,-3.20708 -7.16667,-7.16667v0c0,-3.95958 3.20708,-7.16667 7.16667,-7.16667h129c3.95958,0 7.16667,3.20708 7.16667,7.16667v0c0,3.95958 -3.20708,7.16667 -7.16667,7.16667z"
+                fill="url(#color-1)"
+              />
+              <path
+                d="M100.33333,96.75h-28.66667l-46.58333,-60.91667h121.83333z"
+                fill="url(#color-2)"
+              />
+              <path
+                d="M100.33333,96.75h-28.66667v57.32975c0,2.66242 2.80217,4.39675 5.18508,3.2035l19.51842,-9.761c2.4295,-1.21117 3.96317,-3.69442 3.96317,-6.407z"
+                fill="url(#color-3)"
+              />
+            </g>
+          </g>
+        </svg>
+      </div>
     </div>
     <h2>BetterChat is a ChatTriggers mod to improve your Hypixel chatting experience.</h2>
-    <p>BetterChat is a mod that uses Bayesian analysis to perform lightning-fast and accurate classification to hide spam. It hides people begging, advertising, etc.</p>
-    <p>It also has a couple other miscellaneous features, such as hiding ranks to remove clutter, and it's still an actively-developed mod.</p>
-
-</body>
+    <p>
+      BetterChat is a mod that uses Bayesian analysis to perform lightning-fast and accurate
+      classification to hide spam. It hides people begging, advertising, etc.
+    </p>
+    <p>
+      It also has a couple other miscellaneous features, such as hiding ranks to remove clutter, and
+      it's still an actively-developed mod.
+    </p>
+  </body>
 </html>
